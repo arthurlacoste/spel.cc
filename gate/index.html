@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gate — SSH, with a human touch</title>
+    <meta
+      name="description"
+      content="Control your machines, local tools and MCP servers from ChatGPT using natural language."
+    />
+    <style>
+      :root {
+        --bg: #070707;
+        --panel: #0e0e0e;
+        --muted: #a1a1aa;
+        --line: #27272a;
+        --text: #fafafa;
+        --accent: #d4ff3f;
+        --max: 1120px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--text);
+        background:
+          radial-gradient(
+            circle at 50% 0%,
+            rgba(212, 255, 63, 0.08),
+            transparent 30rem
+          ),
+          var(--bg);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        line-height: 1.5;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .wrap {
+        width: min(calc(100% - 32px), var(--max));
+        margin: 0 auto;
+      }
+
+      nav {
+        height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 750;
+        letter-spacing: -0.02em;
+      }
+
+      .mark {
+        width: 28px;
+        height: 28px;
+        border: 1px solid var(--accent);
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        color: var(--accent);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 14px;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .nav-links a:hover {
+        color: var(--text);
+      }
+
+      .announcement {
+        display: block;
+        margin: 108px auto 0;
+        width: fit-content;
+        padding: 8px 13px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: #d4d4d8;
+        background: rgba(255, 255, 255, 0.025);
+        font-size: 13px;
+      }
+
+      .announcement span {
+        color: var(--accent);
+      }
+
+      .hero {
+        padding: 22px 0 78px;
+        text-align: center;
+      }
+
+      h1 {
+        max-width: 900px;
+        margin: 0 auto;
+        font-size: clamp(48px, 8vw, 96px);
+        line-height: 0.98;
+        letter-spacing: -0.065em;
+        font-weight: 780;
+      }
+
+      .hero p {
+        max-width: 680px;
+        margin: 28px auto 0;
+        color: var(--muted);
+        font-size: clamp(17px, 2vw, 21px);
+      }
+
+      .actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 34px;
+        flex-wrap: wrap;
+      }
+
+      .button {
+        padding: 12px 18px;
+        border-radius: 9px;
+        border: 1px solid var(--line);
+        font-weight: 650;
+        font-size: 14px;
+        transition:
+          transform 0.15s ease,
+          border-color 0.15s ease;
+      }
+
+      .button:hover {
+        transform: translateY(-1px);
+        border-color: #52525b;
+      }
+
+      .button.primary {
+        background: var(--accent);
+        color: #111;
+        border-color: var(--accent);
+      }
+
+      .terminal {
+        max-width: 860px;
+        margin: 56px auto 0;
+        text-align: left;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+        background: rgba(10, 10, 10, 0.92);
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+      }
+
+      .terminal-head {
+        height: 42px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0 14px;
+        border-bottom: 1px solid var(--line);
+        background: #0b0b0b;
+      }
+
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #343434;
+      }
+
+      pre {
+        margin: 0;
+        padding: 24px;
+        overflow-x: auto;
+        color: #d4d4d8;
+        font:
+          14px/1.8 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          Monaco,
+          Consolas,
+          monospace;
+      }
+
+      .prompt {
+        color: var(--accent);
+      }
+      .dim {
+        color: #71717a;
+      }
+
+      section {
+        padding: 88px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+      }
+
+      .eyebrow {
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      h2 {
+        margin: 12px 0 0;
+        max-width: 730px;
+        font-size: clamp(34px, 5vw, 58px);
+        line-height: 1.05;
+        letter-spacing: -0.045em;
+      }
+
+      .section-copy {
+        max-width: 640px;
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        margin-top: 44px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+
+      .stat {
+        padding: 30px;
+        min-height: 150px;
+        background: rgba(255, 255, 255, 0.018);
+      }
+
+      .stat + .stat {
+        border-left: 1px solid var(--line);
+      }
+
+      .stat strong {
+        display: block;
+        font-size: 34px;
+        letter-spacing: -0.04em;
+      }
+
+      .stat span {
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 44px;
+      }
+
+      .card {
+        min-height: 270px;
+        padding: 26px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.025),
+          rgba(255, 255, 255, 0.01)
+        );
+      }
+
+      .card code {
+        color: var(--accent);
+        font:
+          13px ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+
+      .card h3 {
+        margin: 8px 0 9px;
+        font-size: 22px;
+        letter-spacing: -0.025em;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .install {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 44px;
+        align-items: center;
+      }
+      .command {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 22px 64px 22px 22px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #0b0b0b;
+        color: #e4e4e7;
+        font:
+          14px ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+
+      .command code {
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      .copy-button {
+        position: absolute;
+        top: 50%;
+        right: 14px;
+        width: 36px;
+        height: 36px;
+        display: grid;
+        place-items: center;
+        transform: translateY(-50%);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--muted);
+        background: #111;
+        cursor: pointer;
+      }
+
+      .copy-button:hover {
+        color: var(--text);
+        border-color: #52525b;
+      }
+
+      .copy-button .check-icon {
+        display: none;
+        color: var(--accent);
+      }
+
+      .copy-button.copied .copy-icon {
+        display: none;
+      }
+
+      .copy-button.copied .check-icon {
+        display: block;
+      }
+
+      footer {
+        padding: 40px 0 55px;
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .footer-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+
+      @media (max-width: 760px) {
+        .nav-links a:not(:last-child) {
+          display: none;
+        }
+        .hero {
+          padding-top: 54px;
+        }
+        .stats,
+        .grid,
+        .install {
+          grid-template-columns: 1fr;
+        }
+        .stat + .stat {
+          border-left: 0;
+          border-top: 1px solid var(--line);
+        }
+        .card h3 {
+          margin-top: 48px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="wrap">
+      <nav>
+        <a class="brand" href="#">
+          <span>Gate</span>
+        </a>
+        <div class="nav-links">
+          <a href="#how">How it works</a>
+          <a href="#features">Features</a>
+          <a href="#install">Install</a>
+          <a href="https://github.com/spelcc/gate">GitHub</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div class="wrap">
+        <a class="announcement" href="https://github.com/spelcc/gate">
+          <span>Open source</span> on GitHub →
+        </a>
+
+        <section class="hero" style="border-top: 0">
+          <h1>SSH, with a human touch.</h1>
+          <p>
+            Control your machines, local tools and MCP servers from ChatGPT.
+            Speak normally. Gate handles the machinery.
+          </p>
+
+          <div class="actions">
+            <a class="button primary" href="#install">Install Gate</a>
+            <a class="button" href="https://github.com/spelcc/gate"
+              >View source</a
+            >
+          </div>
+
+          <div class="terminal" aria-label="Gate terminal example">
+            <div class="terminal-head">
+              <span class="dot"></span><span class="dot"></span
+              ><span class="dot"></span>
+            </div>
+            <pre><span class="dim">You</span>
+Restart OpenClaw and show me the last 50 error lines.
+
+<span class="prompt">Gate</span>
+✓ Connected to afk
+✓ OpenClaw restarted
+✓ Logs retrieved
+
+<span class="dim">No SSH flags. No command archaeology. No ceremonial suffering.</span></pre>
+          </div>
+        </section>
+      </div>
+
+      <section id="install">
+        <div class="wrap install">
+          <div>
+            <div class="eyebrow">Install</div>
+            <h2>One command. Then just talk.</h2>
+            <p class="section-copy">
+              Gate runs on macOS, Linux and WSL. Your tools stay local. Your
+              patience may even survive.
+            </p>
+          </div>
+
+          <div>
+            <div class="command">
+              <code id="install-command"
+                >curl -fsSL https://spel.cc/gate.sh | bash</code
+              >
+
+              <button
+                class="copy-button"
+                type="button"
+                aria-label="Copy install command"
+                data-copy-target="install-command"
+              >
+                <svg
+                  class="copy-icon"
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                  <path
+                    d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                  ></path>
+                </svg>
+
+                <svg
+                  class="check-icon"
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m5 12 4 4L19 6"></path>
+                </svg>
+              </button>
+            </div>
+            <div
+              class="actions"
+              style="justify-content: flex-start; margin-top: 16px"
+            >
+              <a class="button primary" href="https://github.com/spelcc/gate"
+                >Read the docs</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="how">
+        <div class="wrap">
+          <h2>Your computer becomes part of the conversation.</h2>
+          <p class="section-copy">
+            Gate exposes your local MCP tools, Skills through one
+            OAuth-protected endpoint. ChatGPT can reach your machine without
+            moving your services into somebody else’s cloud.
+          </p>
+
+          <div class="stats">
+            <div class="stat">
+              <strong>1</strong>
+              <span>OAuth-protected endpoint</span>
+            </div>
+            <div class="stat">
+              <strong>∞</strong>
+              <span>Local MCP servers behind it</span>
+            </div>
+            <div class="stat">
+              <strong>0</strong>
+              <span>Need to remember SSH syntax</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features">
+        <div class="wrap">
+          <div class="eyebrow">Built for real machines</div>
+          <h2>Remote control without pretending computers are friendly.</h2>
+
+          <div class="grid">
+            <article class="card">
+              <code>run_command</code>
+              <h3>Natural-language operations</h3>
+              <p>
+                Run commands, restart services, inspect logs and manage projects
+                from a normal ChatGPT conversation.
+              </p>
+            </article>
+
+            <article class="card">
+              <code>mcp.json</code>
+              <h3>Bring every MCP</h3>
+              <p>
+                Namespace local MCP servers behind Gate and expose them through
+                one stable connection.
+              </p>
+            </article>
+
+            <article class="card">
+              <code>skills_search</code>
+              <h3>Local Agent Skills</h3>
+              <p>
+                Keep reusable workflows on your machine. ChatGPT discovers and
+                reads only what it needs.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap footer-row">
+        <span>Gate is open source under the MIT License.</span>
+        <span>Built by Spel.</span>
+      </div>
+    </footer>
+  </body>
+
+  <script>
+    document.querySelectorAll("[data-copy-target]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const targetId = button.dataset.copyTarget;
+        const target = document.getElementById(targetId);
+
+        if (!target) return;
+
+        try {
+          await navigator.clipboard.writeText(target.textContent.trim());
+
+          button.classList.add("copied");
+          button.setAttribute("aria-label", "Copied");
+
+          window.setTimeout(() => {
+            button.classList.remove("copied");
+            button.setAttribute("aria-label", "Copy install command");
+          }, 1600);
+        } catch {
+          console.error("Could not copy command");
+        }
+      });
+    });
+  </script>
+</html>
