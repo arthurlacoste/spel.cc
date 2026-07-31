@@ -23,17 +23,23 @@ export function ProjectCard({
       <Card className="h-full p-6 transition-transform group-hover:-translate-y-1">
         <CardHeader className="p-0">
           <div className="flex items-start justify-between">
-            {monochrome ? (
-              <MonochromeLogo src={logo} label={`${title} logo`} />
-            ) : (
-              <Image
-                src={logo}
-                alt={`${title} logo`}
-                width={58}
-                height={58}
-                className="size-14 rounded-xl object-contain"
-              />
-            )}
+            <span className="flex size-14 shrink-0 items-center justify-center">
+              {monochrome ? (
+                <MonochromeLogo
+                  src={logo}
+                  label={`${title} logo`}
+                  className="size-10"
+                />
+              ) : (
+                <Image
+                  src={logo}
+                  alt={`${title} logo`}
+                  width={40}
+                  height={40}
+                  className="size-10 rounded-lg object-contain"
+                />
+              )}
+            </span>
             <span className="text-xs uppercase tracking-widest text-muted-foreground">
               {kind}
             </span>
