@@ -1,4 +1,3 @@
-import { withBasePath } from "@/lib/base-path"
 import Image from "next/image"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { RiArrowRightUpLine } from "@remixicon/react"
