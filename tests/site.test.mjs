@@ -7,3 +7,5 @@ test("contains all project routes and logos",()=>{for(const p of ["src/app/page.
 test("theme follows system",()=>assert.match(read("src/components/site/theme-provider.tsx"),/defaultTheme="system"/))
 
 test("normalizes project logo bounds",()=>{const source=read("src/components/site/project-card.tsx");assert.match(source,/size-14 shrink-0 items-center justify-center/);assert.match(source,/className="size-10"/)})
+
+test("centers the value proposition on independent work",()=>{const source=read("src/app/page.tsx");assert.match(source,/Spend less time managing\. More time making\./);assert.match(source,/artisans, artists and/);assert.doesNotMatch(source,/Agentic toolbox|Tools for agents/)})
