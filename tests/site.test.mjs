@@ -9,3 +9,5 @@ test("theme follows system",()=>assert.match(read("src/components/site/theme-pro
 test("normalizes project logo bounds",()=>{const source=read("src/components/site/project-card.tsx");assert.match(source,/size-14 shrink-0 items-center justify-center/);assert.match(source,/className="size-10"/)})
 
 test("centers the value proposition on independent work",()=>{const source=read("src/app/page.tsx");assert.match(source,/Spend less time managing\. More time making\./);assert.match(source,/artisans, artists and/);assert.doesNotMatch(source,/Agentic toolbox|Tools for agents/)})
+
+test("centers the approach cards",()=>{const source=read("src/app/page.tsx");assert.match(source,/h-full p-8 text-center/);assert.match(source,/flex h-full flex-col items-center/);assert.match(source,/rounded-full border bg-muted/)})

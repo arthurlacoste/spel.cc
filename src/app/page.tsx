@@ -132,13 +132,13 @@ export default function Home() {
             </div>
             <div className="grid gap-6 md:grid-cols-3">
               {principles.map(({ icon: Icon, title, copy }) => (
-                <Card key={title} className="p-6">
-                  <CardHeader className="p-0">
-                    <span className="flex size-11 items-center justify-center border bg-muted">
+                <Card key={title} className="h-full p-8 text-center">
+                  <CardHeader className="flex h-full flex-col items-center p-0">
+                    <span className="flex size-12 items-center justify-center rounded-full border bg-muted">
                       <Icon className="size-5" />
                     </span>
-                    <CardTitle className="mt-5">{title}</CardTitle>
-                    <CardDescription className="mt-2 leading-6">
+                    <CardTitle className="mt-6 text-xl">{title}</CardTitle>
+                    <CardDescription className="mt-3 max-w-xs text-pretty leading-6">
                       {copy}
                     </CardDescription>
                   </CardHeader>
